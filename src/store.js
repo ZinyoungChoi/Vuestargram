@@ -5,8 +5,9 @@ import InstarList from "./assets/data/InstarList";
 const likeList = InstarList.map((like) => like.likes);
 const store = createStore({
   state() {
+    //return 안에 state 기본값 저장
     return {
-      name: "kim",
+      name: "진영",
       age: 20,
       InstarList : InstarList,
       likes: likeList,
@@ -22,12 +23,6 @@ const store = createStore({
         state.more = data;
         state.plus++;
         state.likes = [...state.likes, data.likes]
-    },
-    changename(state) {
-      state.name = "choi";
-    },
-    plusAge(state, data) {
-      state.age += data;
     },
     pushLike(state, data) {
       const moreLikes = data.likes;

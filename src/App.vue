@@ -4,20 +4,27 @@
       <li @click="step--">Cancel</li>
     </ul>
     <ul class="header-button-right">
+      <li v-if="step == 0">
+        <input
+          @change="upload"
+          accept="image/*"
+          type="file"
+          id="file"
+          class="inputfile"
+        />
+        <label for="file" class="input-plus">업로드</label>
+      </li>
       <li v-if="step == 1" @click="step++">Next</li>
       <li v-if="step == 2" @click="publish">발행</li>
     </ul>
     <img src="./assets/logo.svg" class="logo" @click="step = 0" />
   </div>
-  
+
   <!--computed && mapState 사용-->
-  <h4>{{ myname }}</h4> 
-  <p>{{ age }}</p>
-
-  <!--mapMutations 사용-->
-  <button @click="plusAge(1)">Age +1</button>
-
-  <button @click="$store.commit('changename')">버튼</button>
+  <div v-if="step == 0" class="my_profile">
+    <h4>{{ myname }} 님</h4>
+    <p class="cursor" @click="step = 3"> My Follower</p>
+  </div>
 
   <!--   <p>{{ $store.state.more }}</p> -->
 
@@ -31,19 +38,11 @@
   />
 
   <br />
-  <button @click="more">더보기 store X</button>
-  <button @click="$store.dispatch('getData')">더보기 store O</button>
+  <!--store로 더보기 버튼 만들기-->
 
   <div class="footer">
     <ul class="footer-button-plus">
-      <input
-        @change="upload"
-        accept="image/*"
-        type="file"
-        id="file"
-        class="inputfile"
-      />
-      <label for="file" class="input-plus">+</label>
+      <li @click="$store.dispatch('getData')" class="more_content">+</li>
     </ul>
   </div>
 
@@ -59,7 +58,6 @@
 <script>
 import Container from "./components/Container.vue";
 import data from "./assets/data/InstarList.js";
-import axios from "axios";
 import filter from "./assets/data/filterList.js";
 import { mapMutations, mapState } from "vuex";
 
@@ -69,7 +67,7 @@ export default {
     return {
       InstarList: data,
       plus: 0,
-      step: 3,
+      step: 0,
       uploadImg: "",
       mytext: "",
       filterList: filter,
@@ -86,7 +84,7 @@ export default {
   },
   methods: {
     //mapMutations = store mutations 한번에 가져다 쓰기
-    ...mapMutations(['setMore', 'plusAge']),
+    ...mapMutations(["setMore", "plusAge"]),
     publish() {
       var mylist = {
         name: "Choi Zin",
@@ -102,15 +100,6 @@ export default {
       this.step = 0;
       this.$store.commit("unshiftLike", mylist);
     },
-    more() {
-      axios
-        .get(`https://codingapple1.github.io/vue/more${this.plus}.json`)
-        .then((result) => {
-          this.InstarList.push(result.data);
-          this.plus++;
-          this.$store.commit("pushLike", result.data);
-        });
-    },
     upload(e) {
       let file = e.target.files;
       console.log(file[0]);
@@ -121,11 +110,11 @@ export default {
     },
   },
   computed: {
-    name(){
-      return this.$store.state.name
+    name() {
+      return this.$store.state.name;
     },
-    ...mapState(['name', 'age', 'likes']),
-    ...mapState({myname : 'name'})
+    ...mapState(["name", "age", "likes"]),
+    ...mapState({ myname: "name" }),
   },
 };
 </script>
