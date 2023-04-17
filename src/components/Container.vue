@@ -12,6 +12,7 @@
 
     <!--사진 필터선택 페이지-->
     <div v-else-if="step == 1">
+      <!--class, style에 데이터 바인딩-->
       <div
         :class="`upload-image ${selectFilter}`"
         :style="{
@@ -20,6 +21,13 @@
         }"
       ></div>
       <div class="filters">
+        <!--solt 사용하여 보내주기
+
+        1. 자식은 <slot></slot>이라는 HTML 태그를 이용해서 데이터가 꽂힐 곳을 정해놓음
+
+        2. 부모는 <자식컴포넌트>데이터</자식컴포넌트> 이렇게 자식컴포넌트 사이에 데이터를 작성해서 보냄 
+
+        그럼 부모가 가진 데이터가 자식의 <slot> 자리에 자동으로 꽂힘. -->
         <FilterBox
           v-for="filters in filterList"
           :key="filters"
@@ -78,7 +86,7 @@ export default {
   methods: {
     textchange(e) {
       let texts = e.target.value;
-      console.log("TEST", texts);
+      //$emit으로 상위컴포넌트에 전달
       this.$emit("text", texts);
     },
   },

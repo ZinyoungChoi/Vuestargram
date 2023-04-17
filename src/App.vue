@@ -1,7 +1,8 @@
 <template>
   <div class="header">
     <ul class="header-button-left">
-      <li @click="step--">Cancel</li>
+      <li v-if="step < 3" @click="step--">Cancel</li>
+      <li v-else-if="step == 3" @click="step = 0">Cancel</li>
     </ul>
     <ul class="header-button-right">
       <li v-if="step == 0">
@@ -26,8 +27,8 @@
     <p class="cursor" @click="step = 3"> My Follower</p>
   </div>
 
-  <!--   <p>{{ $store.state.more }}</p> -->
 
+  <!--@text 하위 컴포넌트에서 데이터 보내준 것 받아주기-->
   <Container
     @text="mytext = $event"
     :filterList="filterList"
@@ -37,22 +38,13 @@
     :selectFilter="selectFilter"
   />
 
-  <br />
   <!--store로 더보기 버튼 만들기-->
-
   <div class="footer">
     <ul class="footer-button-plus">
+      <!--store에 있는 actions 불러올때는 .dispatch('')-->
       <li @click="$store.dispatch('getData')" class="more_content">+</li>
     </ul>
   </div>
-
-  <!-- Tab 만들었던 것
-    <div v-if="step === 0">내용0</div>
-  <div v-else-if="step === 1">내용1</div>
-  <div v-else-if="step === 2">내용2</div>
-  <button @click="step = 0">버튼0</button>
-  <button @click="step = 1">버튼1</button>
-  <button @click="step = 2">버튼2</button> -->
 </template>
 
 <script>
@@ -74,6 +66,7 @@ export default {
       selectFilter: "",
     };
   },
+  //mitt로 보낸갑 수신받을때는 보통 라이프사이클 훅 중 하나인 mounted()안에 적음.
   mounted() {
     this.emitter.on("mitt", (a) => {
       this.selectFilter = a;
@@ -85,6 +78,7 @@ export default {
   methods: {
     //mapMutations = store mutations 한번에 가져다 쓰기
     ...mapMutations(["setMore", "plusAge"]),
+    //발행버튼 클릭 시 InstarList배열 앞에 추가할 데이터
     publish() {
       var mylist = {
         name: "Choi Zin",
@@ -100,13 +94,15 @@ export default {
       this.step = 0;
       this.$store.commit("unshiftLike", mylist);
     },
+    /**1. 파일업로드시에 e.target.files 라는 코드를 활용하면 업로드한 파일을 리스트로 알려줌.
+     * 2. URL.createObjectURL()에 업로드한 파일을 담으면 가상의 url을 하나 생성해줌.
+     * 3. 업로드하면 다음페이지로 넘어가야함(this.step = 1).
+     */
     upload(e) {
       let file = e.target.files;
-      console.log(file[0]);
       let url = URL.createObjectURL(file[0]);
       this.step = 1;
       this.uploadImg = url;
-      console.log("URL", url);
     },
   },
   computed: {
