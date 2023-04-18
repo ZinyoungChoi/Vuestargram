@@ -1,4 +1,5 @@
 <template>
+  <!--header-->
   <div class="header">
     <ul class="header-button-left">
       <li v-if="step < 3" @click="step--">Cancel</li>
@@ -21,14 +22,14 @@
     <img src="./assets/logo.svg" class="logo" @click="step = 0" />
   </div>
 
-  <!--computed && mapState 사용-->
+  <!--computed && mapState 사용 : follwer 보러가기-->
   <div v-if="step == 0" class="my_profile">
-    <h4>{{ myname }} 님</h4>
+    <h4>{{ name }} 님</h4>
     <p class="cursor" @click="step = 3"> My Follower</p>
   </div>
 
 
-  <!--@text 하위 컴포넌트에서 데이터 보내준 것 받아주기-->
+  <!--Container-->
   <Container
     @text="mytext = $event"
     :filterList="filterList"
@@ -66,7 +67,7 @@ export default {
       selectFilter: "",
     };
   },
-  //mitt로 보낸갑 수신받을때는 보통 라이프사이클 훅 중 하나인 mounted()안에 적음.
+  //mitt로 보낸값 수신받을때는 보통 라이프사이클 훅 중 하나인 mounted()안에 적음.
   mounted() {
     this.emitter.on("mitt", (a) => {
       this.selectFilter = a;
@@ -92,25 +93,38 @@ export default {
       };
       this.InstarList.unshift(mylist);
       this.step = 0;
-      this.$store.commit("unshiftLike", mylist);
+      //store > mutations에 mylist 보내주기
+      this.$store.commit("unshiftLike", mylist); 
     },
+
     /**1. 파일업로드시에 e.target.files 라는 코드를 활용하면 업로드한 파일을 리스트로 알려줌.
      * 2. URL.createObjectURL()에 업로드한 파일을 담으면 가상의 url을 하나 생성해줌.
      * 3. 업로드하면 다음페이지로 넘어가야함(this.step = 1).
      */
+
     upload(e) {
-      let file = e.target.files;
-      let url = URL.createObjectURL(file[0]);
-      this.step = 1;
-      this.uploadImg = url;
+      let file = e.target.files; //업로드한 파일
+      let url = URL.createObjectURL(file[0]); //가상 url 생성
+      this.step = 1; //페이지 이동
+      this.uploadImg = url; //state에 생성한 url담기
     },
   },
+
+  /**computed
+   * - methods 안에 만든 함수는 함수를 부를 때마다 안의 코드가 실행되지만,
+   * computed 안에 만든 함수는 함수를 불러도 안의 코드가 실행이 안됨.
+   * computed는 컴포넌트 로드시 한번 실행되고 그 값을 계속 저장해서 씁니다.
+   * 
+   * - computed는 return 안쓰면 안됨.
+   * - computed 함수를 가져다가 쓸 때는 소괄호 없이 함수명만 쓰면 됨.
+   */
+
   computed: {
-    name() {
-      return this.$store.state.name;
-    },
-    ...mapState(["name", "age", "likes"]),
-    ...mapState({ myname: "name" }),
+    // name() {
+    //   return this.$store.state.name; //원래 쓰는방식
+    // },
+    ...mapState(["name", "age", "likes"]), //store - state 값 가져오기
+    // ...mapState({ myname: "name" }), 이름 지정해서도 사용가능
   },
 };
 </script>

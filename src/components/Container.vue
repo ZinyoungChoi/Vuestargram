@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!--기본 페이지(부모에서 반복문 설정해주기)-->
+    <!--기본 페이지-->
     <div v-if="step == 0">
       <Post
         :InstarList="InstarList[i]"
@@ -58,7 +58,7 @@
 
     <!--팔로워 검색 페이지-->
     <div v-else-if="step == 3">
-      <Mypage :one="1" />
+      <Mypage />
     </div>
   </div>
 </template>
